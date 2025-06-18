@@ -18,25 +18,17 @@ export async function getCustomerByUserId(
 export async function getBillingDataByUserId(userId: string): Promise<{
   customer: SelectCustomer | null
   clerkEmail: string | null
-  stripeEmail: string | null
 }> {
   // Get Clerk user data
   const user = await currentUser()
 
-  // Get profile to fetch Stripe customer ID
   const customer = await db.query.customers.findFirst({
     where: eq(customers.userId, userId)
   })
 
-  // Get Stripe email if it exists
-  const stripeEmail = customer?.stripeCustomerId
-    ? user?.emailAddresses[0]?.emailAddress || null
-    : null
-
   return {
     customer: customer || null,
-    clerkEmail: user?.emailAddresses[0]?.emailAddress || null,
-    stripeEmail
+    clerkEmail: user?.emailAddresses[0]?.emailAddress || null
   }
 }
 

@@ -41,23 +41,18 @@ This is a Next.js 15 SaaS template using the App Router with clear separation be
   - `(auth)` - Login and signup flows
 - `/app/(authenticated)` - Protected routes requiring Clerk auth
   - `dashboard` - Main application with account, billing, support sections
-- `/app/api` - API routes including Stripe webhook handler
 
 ### Key Patterns
-- **Server Actions** in `/actions` for data mutations (customers, Stripe operations)
 - **Database Schema** in `/db/schema` using Drizzle ORM with PostgreSQL
 - **UI Components** in `/components/ui` from Shadcn UI library
 - **Authentication** handled by Clerk middleware with protected route groups
-- **Payments** integrated via Stripe with webhook handling
 
 ### Data Flow
 1. Authentication state managed by Clerk (`@clerk/nextjs`)
 2. Customer data stored in PostgreSQL via Drizzle ORM
-3. Stripe integration for subscription management
-4. Server actions handle all data mutations with proper auth checks
+3. Server actions handle all data mutations with proper auth checks
 
 ### Environment Variables Required
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk public key
 - `CLERK_SECRET_KEY` - Clerk secret key
-- `STRIPE_SECRET_KEY` - Stripe secret key
 - Database connection handled by Supabase CLI
