@@ -1,4 +1,4 @@
-import { getCustomerByUserId } from "@/actions/customers"
+import { getCustomerByUserId, createCustomer } from "@/actions/customers"
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import DashboardClientLayout from "./_components/layout-client"
@@ -14,11 +14,22 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  const customer = await getCustomerByUserId(user.id)
+  let customer = await getCustomerByUserId(user.id)
 
-  // Gate dashboard access for pro members only
+  // If no customer record exists, create one with a default "free" membership
+  if (!customer) {
+    const { isSuccess, data } = await createCustomer(user.id)
+    if (isSuccess) {
+      customer = data ?? null
+    }
+  }
+
+  // Gate dashboard access for pro members only in production. In development, allow free accounts to ease testing.
   // Store a message to show why they were redirected
-  if (!customer || customer.membership !== "pro") {
+  const isProduction = process.env.NODE_ENV === "production"
+  const isAllowed = customer && (customer.membership === "pro" || (!isProduction && customer.membership === "free"))
+
+  if (!isAllowed) {
     // Using searchParams to pass a message that can be read by client components
     redirect("/?redirect=dashboard#pricing")
   }
